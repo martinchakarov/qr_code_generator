@@ -1,6 +1,7 @@
 const generateForm = document.getElementById('generate-form');
 const customizeForm = document.getElementById('customize-form');
 const qr = document.getElementById('qrcode');
+const qart = document.getElementById('qart');
 
 let currentValue;
 let currentSize;
@@ -8,7 +9,6 @@ let currentImage;
 
 const onGenerateSubmit = async (e) => {
     e.preventDefault();
-
     clearUI();
 
     const url = document.getElementById('url').value;
@@ -58,7 +58,6 @@ const onCustomizeSubmit = (e) => {
 
     setTimeout(() => {
         hideSpinner('customized');
-        const qart = document.getElementById('qart');
 
         const customizedCanvas = document.getElementsByTagName('canvas')[1];
         const saveUrl = customizedCanvas.toDataURL('image/png');
@@ -149,10 +148,6 @@ const uploadPhoto = async () => {
     const result = await readAsDataURL(file);
     const uploadedImage = document.getElementById('image-uploaded');
     uploadedImage.src = result;
-
-    const regex = /data:(.*);base64,(.*)/gm;
-    const parts = regex.exec(result);
-    return parts[0];
 }
 
 const customizeQRCode = () => {
