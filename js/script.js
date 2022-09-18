@@ -53,29 +53,38 @@ const onGenerateSubmit = async (e) => {
 const onCustomizeSubmit = (e) => {
     e.preventDefault();
 
-    showSpinner('customized');
-    customizeQRCode();
+    const imageUpload = document.getElementById('image-upload').value;
 
-    setTimeout(() => {
-        hideSpinner('customized');
+    if (!imageUpload) {
+        alert('Please upload an image to proceed');
+    } else {
+        showSpinner('customized');
+        customizeQRCode();
 
-        const customizedCanvas = document.getElementsByTagName('canvas')[1];
-        const saveUrl = customizedCanvas.toDataURL('image/png');
-        const customizedImage = customizedCanvas.toDataURL('image/png');
+        setTimeout(() => {
+            hideSpinner('customized');
 
-        finalImage = document.createElement('img');
-        finalImage.src = customizedImage;
-        finalImage.height = currentSize;
-        finalImage.width = currentSize;
+            const customizedCanvas = document.getElementsByTagName('canvas')[1];
+            const saveUrl = customizedCanvas.toDataURL('image/png');
+            const customizedImage = customizedCanvas.toDataURL('image/png');
 
-        customizedCanvas.remove();
-        qart.appendChild(finalImage);
+            finalImage = document.createElement('img');
+            finalImage.id = "customized-image";
+            finalImage.src = customizedImage;
+            finalImage.height = currentSize;
+            finalImage.width = currentSize;
+
+            customizedCanvas.remove();
+            qart.appendChild(finalImage);
 
 
-        qart.style.display = 'block';
+            qart.style.display = 'block';
 
-        createSaveBtn(saveUrl, 'customized');
-    }, 1000);
+            createSaveBtn(saveUrl, 'customized');
+        }, 1000);
+
+    }
+
 }
 
 const generateQRCode = (url, size) => {
@@ -98,12 +107,27 @@ const hideSpinner = (type) => {
 const clearUI = () => {
     qr.innerHTML = '';
     const saveLinkGenerated = document.getElementById('save-link-generated');
+    const saveLinkCustomized = document.getElementById('save-link-customized');
     const customizeFormBtn = document.getElementById('customize-form-btn');
+    const customizedImage = document.getElementById('customized-image');
+    const filesUploaded = document.getElementById('image-upload');
+    const imageUploaded = document.getElementById('image-uploaded');
+
     if (saveLinkGenerated) {
         saveLinkGenerated.remove();
     }
+    if (saveLinkCustomized) {
+        saveLinkCustomized.remove();
+    }
     if (customizeFormBtn) {
         customizeFormBtn.remove();
+    }
+    if (customizedImage) {
+        customizedImage.remove();
+    }
+    if (filesUploaded) {
+        filesUploaded.value = '';
+        imageUploaded.src = '';
     }
 
     document.getElementById('customize-form').style.display = 'none';
