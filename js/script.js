@@ -30,7 +30,7 @@ const onGenerateSubmit = async (e) => {
 
             setTimeout(() => {
                 const saveUrl = qr.querySelector('img').src;
-                createSaveBtn(saveUrl);
+                createSaveBtn(saveUrl, 'generated');
                 createcustomizeFormBtn(saveUrl);
 
                 setTimeout(() => {
@@ -52,13 +52,30 @@ const onGenerateSubmit = async (e) => {
 
 const onCustomizeSubmit = (e) => {
     e.preventDefault();
+
     showSpinner('customized');
     customizeQRCode();
 
     setTimeout(() => {
         hideSpinner('customized');
         const qart = document.getElementById('qart');
+
+        const customizedCanvas = document.getElementsByTagName('canvas')[1];
+        const saveUrl = customizedCanvas.toDataURL('image/png');
+        const customizedImage = customizedCanvas.toDataURL('image/png');
+
+        finalImage = document.createElement('img');
+        finalImage.src = customizedImage;
+        finalImage.height = currentSize;
+        finalImage.width = currentSize;
+
+        customizedCanvas.remove();
+        qart.appendChild(finalImage);
+
+
         qart.style.display = 'block';
+
+        createSaveBtn(saveUrl, 'customized');
     }, 1000);
 }
 
@@ -81,10 +98,10 @@ const hideSpinner = (type) => {
 
 const clearUI = () => {
     qr.innerHTML = '';
-    const saveLink = document.getElementById('save-link');
+    const saveLinkGenerated = document.getElementById('save-link-generated');
     const customizeFormBtn = document.getElementById('customize-form-btn');
-    if (saveLink) {
-        saveLink.remove();
+    if (saveLinkGenerated) {
+        saveLinkGenerated.remove();
     }
     if (customizeFormBtn) {
         customizeFormBtn.remove();
@@ -94,14 +111,14 @@ const clearUI = () => {
 
 }
 
-const createSaveBtn = (saveUrl) => {
+const createSaveBtn = (saveUrl, type) => {
     const link = document.createElement('a');
-    link.id = 'save-link';
+    link.id = 'save-link-' + type;
     link.classList = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded w-1/3 m-auto my-5';
     link.href = saveUrl;
     link.download = 'qrcode';
     link.innerHTML = 'Save Image';
-    document.getElementById('generated').appendChild(link);
+    document.getElementById(type).appendChild(link);
 }
 
 const createcustomizeFormBtn = (qrCodeUrl, imageUrl) => {
