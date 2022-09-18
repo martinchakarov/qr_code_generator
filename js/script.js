@@ -1,33 +1,65 @@
-const form = document.getElementById('generate-form');
+const generateForm = document.getElementById('generate-form');
+const customizeForm = document.getElementById('customize-form');
 const qr = document.getElementById('qrcode');
 
-const onGenerateSubmit = (e) => {
+let currentValue;
+let currentSize;
+let currentImage;
+
+const onGenerateSubmit = async (e) => {
     e.preventDefault();
 
     clearUI();
 
     const url = document.getElementById('url').value;
-    const size = document.getElementById('size').value;
+    currentValue = url;
 
-    if (url === '') {
+    const size = document.getElementById('size').value;
+    currentSize = size;
+
+    if (!url) {
         alert('Please enter a valid URL')
     } else {
-        showSpinner();
+        showSpinner('generated');
 
         setTimeout(() => {
 
-            hideSpinner();
+            hideSpinner('generated');
 
             generateQRCode(url, size);
 
             setTimeout(() => {
                 const saveUrl = qr.querySelector('img').src;
                 createSaveBtn(saveUrl);
+                createcustomizeFormBtn(saveUrl);
+
+                setTimeout(() => {
+                    const customizeFormBtn = document.querySelector("#customize-form-btn");
+                    customizeFormBtn.addEventListener('click', showCustomizeForm);
+
+
+                    const imageUpload = document.getElementById('image-upload');
+                    imageUpload.addEventListener('change', async (e) => {
+                        await uploadPhoto();
+                    });
+                }, 50);
             }, 50);
 
         }, 1000);
     }
 
+}
+
+const onCustomizeSubmit = (e) => {
+    e.preventDefault();
+    showSpinner('customized');
+    customizeQRCode();
+
+    setTimeout(() => {
+        hideSpinner('customized');
+        const qart = document.getElementById('qart');
+        qart.style.display = 'block';
+    }, 1000);
 }
 
 const generateQRCode = (url, size) => {
@@ -39,30 +71,89 @@ const generateQRCode = (url, size) => {
 
 }
 
-const showSpinner = () => {
-    document.getElementById('spinner').style.display = 'block'
+const showSpinner = (type) => {
+    document.querySelector(`#${type} #spinner`).style.display = 'block'
 }
 
-const hideSpinner = () => {
-    document.getElementById('spinner').style.display = 'none'
+const hideSpinner = (type) => {
+    document.querySelector(`#${type} #spinner`).style.display = 'none'
 }
 
 const clearUI = () => {
     qr.innerHTML = '';
     const saveLink = document.getElementById('save-link');
+    const customizeFormBtn = document.getElementById('customize-form-btn');
     if (saveLink) {
         saveLink.remove();
     }
+    if (customizeFormBtn) {
+        customizeFormBtn.remove();
+    }
+
+    document.getElementById('customize-form').style.display = 'none';
+
 }
 
 const createSaveBtn = (saveUrl) => {
     const link = document.createElement('a');
     link.id = 'save-link';
-    link.classList = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 rounded w-1/3 m-auto my-5';
+    link.classList = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded w-1/3 m-auto my-5';
     link.href = saveUrl;
     link.download = 'qrcode';
     link.innerHTML = 'Save Image';
     document.getElementById('generated').appendChild(link);
 }
 
-form.addEventListener('submit', onGenerateSubmit);
+const createcustomizeFormBtn = (qrCodeUrl, imageUrl) => {
+    const btn = document.createElement('button');
+    btn.id = 'customize-form-btn';
+    btn.classList = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 rounded w-1/3 m-auto my-5';
+    btn.innerHTML = 'Customize Image';
+    document.getElementById('generated').appendChild(btn);
+}
+
+const showCustomizeForm = () => {
+    document.getElementById('customize-form').style.display = 'block';
+}
+
+const readAsDataURL = async (file) => {
+    return new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onerror = reject;
+        fr.onload = () => {
+            resolve(fr.result);
+        }
+        fr.readAsDataURL(file);
+    });
+}
+
+const uploadPhoto = async () => {
+    const file = document.getElementById('image-upload').files[0];
+    const result = await readAsDataURL(file);
+    const uploadedImage = document.getElementById('image-uploaded');
+    uploadedImage.src = result;
+
+    const regex = /data:(.*);base64,(.*)/gm;
+    const parts = regex.exec(result);
+    return parts[0];
+}
+
+const customizeQRCode = () => {
+    const uploadedImage = document.getElementById('image-uploaded').src;
+    const filter = document.querySelector('input[name="inline-radio-group"]:checked').value;
+
+    new QArt({
+        value: currentValue,
+        imagePath: uploadedImage,
+        filter: filter,
+        size: currentSize,
+        version: 10
+    }).make(document.getElementById('qart'));
+}
+
+
+
+generateForm.addEventListener('submit', onGenerateSubmit);
+customizeForm.addEventListener('submit', onCustomizeSubmit);
+
+
