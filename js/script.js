@@ -27,9 +27,13 @@ const onGenerateSubmit = async (e) => {
             hideSpinner('generated');
 
             generateQRCode(url, size);
+            const generatedCanvas = document.getElementsByTagName('canvas')[0];
+            const saveUrl = generatedCanvas.toDataURL('image/png');
+            convertCanvasToImage(generatedCanvas, currentSize, 'generated-qr-code');
+            qr.style.display = 'block';
 
             setTimeout(() => {
-                const saveUrl = qr.querySelector('img').src;
+                //const saveUrl = qr.querySelector('img').src;
                 createSaveBtn(saveUrl, 'generated');
                 createcustomizeFormBtn(saveUrl);
 
@@ -64,20 +68,10 @@ const onCustomizeSubmit = (e) => {
         setTimeout(() => {
             hideSpinner('customized');
 
-            const customizedCanvas = document.getElementsByTagName('canvas')[1];
+            const customizedCanvas = document.getElementsByTagName('canvas')[0];
             const saveUrl = customizedCanvas.toDataURL('image/png');
-            const customizedImage = customizedCanvas.toDataURL('image/png');
 
-            finalImage = document.createElement('img');
-            finalImage.id = "customized-image";
-            finalImage.src = customizedImage;
-            finalImage.height = currentSize;
-            finalImage.width = currentSize;
-
-            customizedCanvas.remove();
-            qart.appendChild(finalImage);
-
-
+            convertCanvasToImage(customizedCanvas, currentSize, 'customized-qr-code');
             qart.style.display = 'block';
 
             createSaveBtn(saveUrl, 'customized');
@@ -186,6 +180,20 @@ const customizeQRCode = () => {
         version: 10
     }).make(document.getElementById('qart'));
 }
+
+const convertCanvasToImage = (canvasElement, dimensions, imageId) => {
+    const base64Image = canvasElement.toDataURL('image/png');
+
+    const finalImage = document.createElement('img');
+    finalImage.id = imageId;
+    finalImage.src = base64Image;
+    finalImage.classList = 'p-10'
+    finalImage.height = dimensions;
+    finalImage.width = dimensions;
+
+    canvasElement.after(finalImage);
+    canvasElement.remove();
+} 
 
 
 
