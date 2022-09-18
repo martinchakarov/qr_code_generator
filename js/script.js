@@ -33,7 +33,6 @@ const onGenerateSubmit = async (e) => {
             qr.style.display = 'block';
 
             setTimeout(() => {
-                //const saveUrl = qr.querySelector('img').src;
                 createSaveBtn(saveUrl, 'generated');
                 createcustomizeFormBtn(saveUrl);
 
@@ -103,7 +102,7 @@ const clearUI = () => {
     const saveLinkGenerated = document.getElementById('save-link-generated');
     const saveLinkCustomized = document.getElementById('save-link-customized');
     const customizeFormBtn = document.getElementById('customize-form-btn');
-    const customizedImage = document.getElementById('customized-image');
+    const customizedImage = document.getElementById('customized-qr-code');
     const filesUploaded = document.getElementById('image-upload');
     const imageUploaded = document.getElementById('image-uploaded');
 
@@ -183,6 +182,7 @@ const customizeQRCode = () => {
 
 const convertCanvasToImage = (canvasElement, dimensions, imageId) => {
     const base64Image = canvasElement.toDataURL('image/png');
+    const parent = canvasElement.parentElement;
 
     const finalImage = document.createElement('img');
     finalImage.id = imageId;
@@ -191,8 +191,9 @@ const convertCanvasToImage = (canvasElement, dimensions, imageId) => {
     finalImage.height = dimensions;
     finalImage.width = dimensions;
 
-    canvasElement.after(finalImage);
-    canvasElement.remove();
+    parent.innerHTML = '';
+    parent.appendChild(finalImage);
+
 } 
 
 
