@@ -9,7 +9,7 @@ let currentImage;
 
 const onGenerateSubmit = async (e) => {
     e.preventDefault();
-    clearUI();
+    clearGenerateUI();
 
     const url = document.getElementById('url').value;
     currentValue = url;
@@ -55,6 +55,7 @@ const onGenerateSubmit = async (e) => {
 
 const onCustomizeSubmit = (e) => {
     e.preventDefault();
+    clearCustomizeUI();
 
     const imageUpload = document.getElementById('image-upload').value;
 
@@ -97,7 +98,7 @@ const hideSpinner = (type) => {
     document.querySelector(`#${type} #spinner`).style.display = 'none'
 }
 
-const clearUI = () => {
+const clearGenerateUI = () => {
     qr.innerHTML = '';
     const saveLinkGenerated = document.getElementById('save-link-generated');
     const saveLinkCustomized = document.getElementById('save-link-customized');
@@ -125,6 +126,16 @@ const clearUI = () => {
 
     document.getElementById('customize-form').style.display = 'none';
 
+}
+
+const clearCustomizeUI = () => {
+    qart.style.display = 'none';
+
+    const customizeBtn = document.getElementById('save-link-customized');
+
+    if (customizeBtn) {
+        customizeBtn.remove();
+    }
 }
 
 const createSaveBtn = (saveUrl, type) => {
